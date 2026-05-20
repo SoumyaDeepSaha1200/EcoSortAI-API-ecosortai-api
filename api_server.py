@@ -181,13 +181,18 @@ def predict_file():
     return jsonify(result)
 
 # ============================================================
-# MAIN (CRITICAL FIX: NO RELOADER)
+# LOAD MODELS BEFORE STARTING
+# ============================================================
+print("🚀 Loading models...")
+load_models()
+
+# ============================================================
+# MAIN
 # ============================================================
 if __name__ == "__main__":
-    print("🚀 Starting Plastic Detection API...")
-    load_models()
 
-    print("🌐 API running at http://127.0.0.1:5001")
+    print("🌐 Starting API Server...")
+
     port = int(os.environ.get("PORT", 5001))
 
     app.run(
