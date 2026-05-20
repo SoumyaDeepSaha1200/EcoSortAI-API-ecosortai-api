@@ -180,6 +180,10 @@ def predict_file():
     result["image"] = encode_image_to_dataurl(img)
     return jsonify(result)
 
+@app.route("/api/test", methods=["GET"])
+def test():
+    return jsonify({"message": "API working"})
+
 # ============================================================
 # LOAD MODELS BEFORE STARTING
 # ============================================================
