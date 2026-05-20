@@ -123,34 +123,35 @@ def encode_image_to_dataurl(img):
 # ============================================================
 # PREDICTION LOGIC
 # ============================================================
-def predict_image(img):
-    # ---------- Binary ----------
-    x_bin = preprocess_image(img, BIN_SIZE)
-    bin_pred = binary_model.predict(x_bin, verbose=0)
+@app.route("/api/debug_predict", methods=["POST"])
+def debug_predict():
+    try:
+        file = request.files.get("file")
 
-    plastic_prob = float(bin_pred[0][0])
-    non_plastic = 1 - plastic_prob
+        if not file:
+            return jsonify({"step": "file_check", "error": "No file uploaded"}), 400
 
-    if plastic_prob < 0.5:
-        return {
-            "label": "Non-Plastic",
-            "plastic": round(plastic_prob, 4),
-            "non_plastic": round(non_plastic, 4)
-        }
+        image_bytes = file.read()
 
-    # ---------- Type ----------
-    x_type = preprocess_image(img, TYPE_SIZE)
-    probs = type_model.predict(x_type, verbose=0)[0]
-    idx = int(np.argmax(probs))
-    plastic_type = class_labels[idx]
+        img = cv2.imdecode(
+            np.frombuffer(image_bytes, np.uint8),
+            cv2.IMREAD_COLOR
+        )
 
-    return {
-        "label": "Plastic",
-        "plastic_type": plastic_type,
-        "confidence": round(float(probs[idx]), 4),
-        "micron": MICRON_MAP.get(plastic_type, "N/A")
-    }
+        if img is None:
+            return jsonify({"step": "decode", "error": "Invalid image"}), 400
 
+        return jsonify({
+            "message": "Image received and decoded successfully",
+            "filename": file.filename,
+            "image_shape": img.shape
+        })
+
+    except Exception as e:
+        return jsonify({
+            "step": "exception",
+            "error": str(e)
+        }), 500
 # ============================================================
 # ROUTES
 # ============================================================
