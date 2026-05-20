@@ -190,7 +190,7 @@ if __name__ == "__main__":
     print("🌐 API running at http://127.0.0.1:5001")
     app.run(
         host="0.0.0.0",
-        port=port=int(os.environ.get("PORT", 5001)),
+        port=5001,
         debug=False,        # IMPORTANT
         use_reloader=False # CRITICAL FOR WINDOWS + TF
     )
